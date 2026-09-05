@@ -1,0 +1,43 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Student Dashboard{% endblock %}
+{% block dash_content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3"><div class="glass stat-card"><div class="stat-icon" style="background:rgba(59,130,246,.18);color:#3b82f6"><i class="bi bi-file-earmark"></i></div><div><div class="stat-value">{{ docs|length }}</div><div class="stat-label">Documents</div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="glass stat-card"><div class="stat-icon" style="background:rgba(139,92,246,.18);color:#8b5cf6"><i class="bi bi-bar-chart"></i></div><div><div class="stat-value">{{ reports|length }}</div><div class="stat-label">Reports</div></div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="glass stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.18);color:#10b981"><i class="bi bi-graph-up"></i></div><div><div class="stat-value">{{ avg_sim }}%</div><div class="stat-label">Avg Similarity</div></div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="glass stat-card"><div class="stat-icon" style="background:rgba(6,182,212,.18);color:#06b6d4"><i class="bi bi-people"></i></div><div><div class="stat-value">{{ counts.students }}</div><div class="stat-label">Total Students</div></div></div></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-clock-history"></i> Recent Activity</h5>
+      {% if history %}
+      <div class="list-group list-group-flush">
+        {% for h in history %}
+        <div class="list-group-item bg-transparent border-secondary d-flex justify-content-between px-0">
+          <span><i class="bi bi-{{ {'upload':'cloud-arrow-up','analysis':'robot','view_report':'eye','export_pdf':'file-pdf','export_docx':'file-word','export_xlsx':'file-spreadsheet','share':'share'}.get(h.action,'activity') }}"></i> {{ h.detail or h.action }}</span>
+          <small class="text-muted">{{ h.created_at }}</small>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}<p class="text-muted mb-0">No activity yet. Upload a document to get started.</p>{% endif %}
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-file-earmark-bar-graph"></i> Recent Reports</h5>
+      {% if reports %}
+      <div class="list-group list-group-flush">
+        {% for r in reports[:5] %}
+        <a href="{{ url_for('pages.view_report', report_id=r.id) }}" class="list-group-item bg-transparent border-secondary px-0 d-flex justify-content-between">
+          <span class="text-truncate">{{ r.original_name }}</span>
+          <span class="badge-cat {% if r.similarity_percent <= 10 %}cat-very-low{% elif r.similarity_percent <= 30 %}cat-low{% elif r.similarity_percent <= 50 %}cat-medium{% elif r.similarity_percent <= 75 %}cat-high{% else %}cat-very-high{% endif %}">{{ r.similarity_percent }}%</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}<p class="text-muted mb-0">No reports yet.</p>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

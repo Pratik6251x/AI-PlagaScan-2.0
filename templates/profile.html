@@ -1,0 +1,89 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Profile{% endblock %}
+{% block dash_content %}
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="glass p-4 text-center">
+      <i class="bi bi-person-circle grad-text" style="font-size:5rem"></i>
+      <h4 class="fw-bold mt-2 mb-0">{{ user.full_name }}</h4>
+      <p class="text-muted text-capitalize">{{ current_user.role }}</p>
+      <p class="small text-muted"><i class="bi bi-envelope"></i> {{ user.email }}</p>
+      {% if user.department %}<p class="small text-muted"><i class="bi bi-building"></i> {{ user.department }}</p>{% endif %}
+      {% if user.phone %}<p class="small text-muted"><i class="bi bi-telephone"></i> {{ user.phone }}</p>{% endif %}
+      <span class="badge bg-{% if user.is_active %}success{% else %}danger{% endif %}-subtle text-{% if user.is_active %}success{% else %}danger{% endif %}">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="glass p-4 mb-3">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-pencil"></i> Edit Profile</h5>
+      <form method="POST">
+        <input type="hidden" name="action" value="update_profile">
+        <div class="mb-3"><label class="form-label">Full Name</label><input type="text" name="full_name" class="form-control" value="{{ user.full_name }}" required></div>
+        <div class="mb-3"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control" value="{{ user.phone or '' }}"><div class="form-text text-danger" id="phone-error" style="display:none"></div></div>
+        <div class="mb-3"><label class="form-label">Department</label><input type="text" name="department" class="form-control" value="{{ user.department or '' }}"></div>
+        <button class="btn btn-grad"><i class="bi bi-save"></i> Update Profile</button>
+      </form>
+    </div>
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-shield-lock"></i> Change Password</h5>
+      <form method="POST">
+        <input type="hidden" name="action" value="change_password">
+        <div class="mb-3"><label class="form-label">Current Password</label><input type="password" name="current_password" class="form-control" required></div>
+        <div class="mb-3"><label class="form-label">New Password</label><input type="password" name="new_password" class="form-control" required minlength="6"></div>
+        <div class="mb-3"><label class="form-label">Confirm New Password</label><input type="password" name="confirm_password" class="form-control" required></div>
+        <button class="btn btn-outline-glass"><i class="bi bi-key"></i> Change Password</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
+  // profile update form
+  const profileForm = document.querySelector('form[inputname="update_profile"]') || document.querySelector('form');
+  const forms = document.querySelectorAll('form');
+  // attach to the profile update form specifically by hidden action field
+  let targetForm = null;
+  forms.forEach(f => {
+    const actionField = f.querySelector('input[name="action"][value="update_profile"]');
+    if (actionField) targetForm = f;
+  });
+    if (!targetForm) return;
+    targetForm.addEventListener('submit', function (e) {
+    const phoneInput = targetForm.querySelector('input[name="phone"]');
+    if (!phoneInput) return;
+    const raw = (phoneInput.value || '').trim();
+    const cleaned = raw.replace(/\s|-/g, '');
+    if (!cleaned) return; // empty allowed
+    const errorEl = document.getElementById('phone-error');
+    errorEl.style.display = 'none';
+    errorEl.textContent = '';
+    let ok = false;
+    if (cleaned.startsWith('+')) {
+      const digits = cleaned.slice(1);
+      if (/^\d+$/.test(digits) && digits.length > 10) {
+        const local = digits.slice(-10);
+        const country = digits.slice(0, -10);
+        if (local.length === 10 && country.length >=1 && country.length <=3) {
+          phoneInput.value = '+' + digits; // normalized
+          ok = true;
+        }
+      }
+    } else {
+      if (/^\d{10}$/.test(cleaned)) {
+        phoneInput.value = cleaned;
+        ok = true;
+      }
+    }
+    if (!ok) {
+      e.preventDefault();
+      errorEl.textContent = 'Phone number must be exactly 10 digits and may include an optional country code like +91.';
+      errorEl.style.display = 'block';
+      phoneInput.focus();
+    }
+  });
+});
+</script>
+{% endblock %}

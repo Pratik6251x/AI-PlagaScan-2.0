@@ -1,0 +1,57 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Notifications{% endblock %}
+{% block dash_content %}
+<div class="glass p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-semibold mb-0"><i class="bi bi-bell"></i> Notifications</h5>
+    {% if items %}
+    <div class="d-flex gap-2">
+      <form method="POST" action="{{ url_for('pages.read_all_notifications') }}" class="d-inline">
+        <button class="btn btn-sm btn-outline-glass">Mark all read</button>
+      </form>
+      <form method="POST" action="{{ url_for('pages.delete_all_notifications_route') }}" class="d-inline" onsubmit="return confirm('Delete all notifications?');">
+        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete all</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  <div class="list-group list-group-flush">
+    {% for n in items %}
+    <div class="list-group-item bg-transparent border-secondary d-flex justify-content-between align-items-start px-0" id="notif-{{ n.id }}">
+      <div>
+        <div class="fw-semibold">{{ n.title }} {% if not n.is_read %}<span class="badge bg-danger">new</span>{% endif %}</div>
+        <small class="text-muted">{{ n.message }}</small>
+      </div>
+      <div class="text-end">
+        <small class="text-muted d-block">{{ n.created_at }}</small>
+        <div class="mt-2">
+          {% if not n.is_read %}
+          <button class="btn btn-sm btn-link text-primary p-0 me-2" data-id="{{ n.id }}" onclick="markRead(this.dataset.id)">Mark read</button>
+          {% endif %}
+          <button class="btn btn-sm btn-link text-danger p-0" data-id="{{ n.id }}" onclick="deleteNotif(this.dataset.id)"><i class="bi bi-trash"></i> Delete</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% if not items %}<p class="text-muted text-center py-4 mb-0">No notifications</p>{% endif %}
+  </div>
+</div>
+<script>
+function markRead(id){
+  fetch('/notifications/'+id+'/read',{method:'POST'})
+    .then(()=>{
+      const item = document.getElementById('notif-'+id);
+      const badge = item.querySelector('.badge');
+      if(badge) badge.remove();
+    });
+}
+function deleteNotif(id){
+  if(confirm('Delete this notification?')){
+    fetch('/notifications/'+id+'/delete',{method:'POST'})
+      .then(()=>{
+        document.getElementById('notif-'+id).remove();
+      });
+  }
+}
+</script>
+{% endblock %}

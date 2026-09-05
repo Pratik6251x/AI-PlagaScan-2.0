@@ -1,0 +1,89 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Authority Dashboard{% endblock %}
+{% block dash_content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3"><div class="glass stat-card"><div class="stat-icon" style="background:rgba(59,130,246,.18);color:#3b82f6"><i class="bi bi-people"></i></div><div><div class="stat-value">{{ counts.students }}</div><div class="stat-label">Students</div></div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="glass stat-card"><div class="stat-icon" style="background:rgba(139,92,246,.18);color:#8b5cf6"><i class="bi bi-person-badge"></i></div><div><div class="stat-value">{{ counts.teachers }}</div><div class="stat-label">Teachers</div></div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="glass stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.18);color:#10b981"><i class="bi bi-file-earmark"></i></div><div><div class="stat-value">{{ counts.documents }}</div><div class="stat-label">Documents</div></div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="glass stat-card"><div class="stat-icon" style="background:rgba(6,182,212,.18);color:#06b6d4"><i class="bi bi-journals"></i></div><div><div class="stat-value">{{ counts.reports }}</div><div class="stat-label">Reports</div></div></div></div></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-6">
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-graph-up"></i> Daily Uploads (30 days)</h5>
+      <canvas id="chartDaily" style="width:100%;height:240px"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-activity"></i> Similarity Trends</h5>
+      <canvas id="chartTrends" style="width:100%;height:240px"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-5">
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-pie-chart"></i> Category Distribution</h5>
+      <canvas id="chartCat" style="width:100%;height:240px"></canvas>
+      <div class="mt-3 small">
+        {% set cat_colors = {'Very Low':'#10b981','Low':'#4ade80','Medium':'#fbbf24','High':'#fb923c','Very High':'#f87171'} %}
+        {% for c in categories %}
+        <span class="me-3"><i class="bi bi-circle-fill" style="color:{{ cat_colors[c.category] }}"></i> {{ c.category }}: {{ c.count }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-building"></i> Department Statistics</h5>
+      <div class="table-glass">
+        <table class="table">
+          <thead><tr><th>Department</th><th>Documents</th><th>Reports</th></tr></thead>
+          <tbody>
+          {% for d in departments %}
+          <tr><td>{{ d.department }}</td><td>{{ d.docs }}</td><td>{{ d.reports }}</td></tr>
+          {% endfor %}
+          {% if not departments %}<tr><td colspan="3" class="text-muted text-center">No department data yet</td></tr>{% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12">
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-calendar3"></i> Monthly Statistics</h5>
+      <div class="table-glass">
+        <table class="table">
+          <thead><tr><th>Month</th><th>Reports</th><th>Avg Similarity</th></tr></thead>
+          <tbody>
+          {% for m in monthly %}
+          <tr><td>{{ m.month }}</td><td>{{ m.uploads }}</td><td>{{ m.avg_sim }}%</td></tr>
+          {% endfor %}
+          {% if not monthly %}<tr><td colspan="3" class="text-muted text-center">No data yet</td></tr>{% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const daily = {{ daily | tojson }};
+  const trends = {{ trends | tojson }};
+  const categories = {{ categories | tojson }};
+  document.addEventListener('DOMContentLoaded', () => {
+    drawBarChart('chartDaily', daily.map(d => d.day), daily.map(d => d.count), '#3b82f6');
+    drawLineChart('chartTrends', trends.map(t => t.day), trends.map(t => t.avg_sim || 0), '#8b5cf6');
+    const catColors = {'Very Low':'#10b981','Low':'#4ade80','Medium':'#fbbf24','High':'#fb923c','Very High':'#f87171'};
+    drawDoughnut('chartCat', categories.map(c => ({value: c.count, color: catColors[c.category] || '#6366f1'})));
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Report #{{ report.id }}{% endblock %}
+{% block dash_content %}
+{% if report.scan_status == 'processing' %}
+      <div class="alert alert-info mb-3" id="scanStatus"><i class="bi bi-cloud-arrow-down"></i> Internet plagiarism scan is still running. This page will refresh automatically when the result is ready.</div>
+      {% elif report.scan_status == 'failed' %}
+      <div class="alert alert-danger mb-3"><i class="bi bi-exclamation-triangle"></i> Internet scan failed: {{ report.error_message }}</div>
+      {% endif %}
+      <div class="row g-3">
+  <div class="col-lg-8">
+    <div class="glass p-4 mb-3">
+      <div class="d-flex justify-content-between flex-wrap align-items-center mb-3">
+        <div>
+          <h4 class="fw-bold mb-0">{{ report.original_name }}</h4>
+          <small class="text-muted"><i class="bi bi-calendar"></i> {{ report.upload_date or report.created_at }}</small>
+        </div>
+        {% if report.scan_status == 'processing' %}<span class="badge-cat cat-low">Processing</span>{% else %}<span class="badge-cat {% if report.similarity_percent <= 10 %}cat-very-low{% elif report.similarity_percent <= 30 %}cat-low{% elif report.similarity_percent <= 50 %}cat-medium{% elif report.similarity_percent <= 75 %}cat-high{% else %}cat-very-high{% endif %}">{{ report.category }} - {{ report.similarity_percent }}%</span>{% endif %}
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <p class="mb-1 small text-muted">Similarity</p>
+          {% if report.scan_status == 'processing' %}<p class="text-muted mb-0">Pending online scan</p>{% else %}<div class="meter"><span data-width="{{ report.similarity_percent }}"></span></div><p class="mt-1 fw-bold">{{ report.similarity_percent }}%</p>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <p class="mb-1 small text-muted">Original Content</p>
+          {% if report.scan_status == 'processing' %}<p class="text-muted mb-0">Pending online scan</p>{% else %}<div class="meter"><span data-width="{{ report.original_percent }}"></span></div><p class="mt-1 fw-bold">{{ report.original_percent }}%</p>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <p class="mb-1 small text-muted">AI Generated Probability</p>
+          {% if report.scan_status == 'processing' %}<p class="text-muted mb-0">Pending AI analysis</p>{% else %}<div class="meter"><span data-width="{{ report.ai_probability }}"></span></div><p class="mt-1 fw-bold">{{ report.ai_probability }}%</p>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <p class="mb-1 small text-muted">Human Written Probability</p>
+          {% if report.scan_status == 'processing' %}<p class="text-muted mb-0">Pending AI analysis</p>{% else %}<div class="meter"><span data-width="{{ report.human_probability }}"></span></div><p class="mt-1 fw-bold">{{ report.human_probability }}%</p>{% endif %}
+        </div>
+        <div class="col-12">
+          <p class="mb-1 small text-muted">Confidence Score</p>
+          {% if report.scan_status == 'processing' %}<p class="text-muted mb-0">Pending scan completion</p>{% else %}<div class="meter"><span data-width="{{ report.confidence_score }}"></span></div><p class="mt-1 fw-bold">{{ report.confidence_score }}%</p>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="glass p-4 mb-3">
+      <h5 class="fw-semibold mb-2"><i class="bi bi-card-text"></i> Summary</h5>
+      <p class="text-muted mb-0">{{ report.summary }}</p>
+    </div>
+
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-link-45deg"></i> Matched Sources ({{ sources|length }})</h5>
+      {% if sources %}
+      {% for s in sources %}
+      <div class="border border-secondary rounded p-3 mb-3">
+        <div class="d-flex justify-content-between flex-wrap mb-2">
+          <strong>Online Source</strong>
+          <span class="badge-cat cat-high">{{ s.similarity_percent }}% match</span>
+        </div>
+        <p class="small text-muted mb-2"><i class="bi bi-link-45deg"></i> {% if s.source_reference.startswith("http") %}<a href="{{ s.source_reference }}" target="_blank" rel="noopener noreferrer">{{ s.source_reference }}</a>{% else %}{{ s.source_reference }}{% endif %}</p>
+        <div class="row g-2">
+          <div class="col-md-6"><div class="bg-black bg-opacity-25 rounded p-2 small"><strong>Matched:</strong> {{ s.matched_text }}</div></div>
+          <div class="col-md-6"><div class="bg-black bg-opacity-25 rounded p-2 small"><strong>Source:</strong> {{ s.source_text }}</div></div>
+        </div>
+        {% if s.citation_suggestion %}<p class="small text-primary mt-2 mb-0"><i class="bi bi-quote"></i> {{ s.citation_suggestion }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      {% else %}<p class="text-muted mb-0">No significant online matches found.</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="glass p-4 mb-3">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-download"></i> Export &amp; Share</h5>
+      <div class="d-grid gap-2">
+        <a href="/api/report/{{ report.id }}/export/pdf" class="btn btn-grad"><i class="bi bi-file-pdf"></i> Download PDF</a>
+        <a href="/api/report/{{ report.id }}/export/docx" class="btn btn-outline-glass"><i class="bi bi-file-word"></i> Export DOCX</a>
+        <a href="/api/report/{{ report.id }}/export/xlsx" class="btn btn-outline-glass"><i class="bi bi-file-spreadsheet"></i> Export Excel</a>
+        <button class="btn btn-outline-glass" onclick="shareReport({{ report.id }})"><i class="bi bi-share"></i> Share</button>
+      </div>
+      <div id="shareBox" class="mt-3" style="display:none">
+        <label class="form-label small">Shareable link</label>
+        <div class="input-group">
+          <input id="shareUrl" class="form-control" readonly>
+          <button class="btn btn-outline-secondary" onclick="copyShare()"><i class="bi bi-clipboard"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-info-circle"></i> Similarity Categories</h5>
+      <ul class="list-unstyled small mb-0">
+        <li><span class="badge-cat cat-very-low">0-10%</span> Very Low</li>
+        <li><span class="badge-cat cat-low">11-30%</span> Low</li>
+        <li><span class="badge-cat cat-medium">31-50%</span> Medium</li>
+        <li><span class="badge-cat cat-high">51-75%</span> High</li>
+        <li><span class="badge-cat cat-very-high">76-100%</span> Very High</li>
+      </ul>
+      <hr class="border-secondary">
+      <p class="small text-muted mb-0">Results are probabilistic analysis, not legal proof of plagiarism or authorship.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function shareReport(id){
+  fetch('/api/report/'+id+'/share',{method:'POST'}).then(r=>r.json()).then(d=>{
+    document.getElementById('shareUrl').value=d.share_url;
+    document.getElementById('shareBox').style.display='block';
+  });
+}
+function copyShare(){const i=document.getElementById('shareUrl');i.select();document.execCommand('copy');}
+{% if report.scan_status == 'processing' %}
+let scanPoll = setInterval(async function(){
+  try {
+    const r = await fetch('/api/report/{{ report.id }}/status', {cache: 'no-store'});
+    const d = await r.json();
+    if (d.status === 'completed' || d.status === 'failed') {
+      clearInterval(scanPoll);
+      window.location.replace(window.location.href.split('#')[0]);
+    }
+  } catch(e) {}
+}, 5000);
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}History{% endblock %}
+{% block dash_content %}
+<div class="glass p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-semibold mb-0"><i class="bi bi-clock-history"></i> Activity History</h5>
+    {% if items %}
+    <form method="POST" action="{{ url_for('pages.delete_all_history_route') }}" onsubmit="return confirm('Delete all history? This cannot be undone.')">
+      <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete all</button>
+    </form>
+    {% endif %}
+  </div>
+  <div class="table-glass">
+    <table class="table table-hover">
+      <thead><tr><th>Action</th><th>Detail</th><th>Document</th><th>Date</th><th>Actions</th></tr></thead>
+      <tbody>
+      {% for h in items %}
+      <tr>
+        <td><span class="badge bg-primary-subtle text-primary">{{ h.action }}</span></td>
+        <td>{{ h.detail or '—' }}</td>
+        <td class="text-truncate" style="max-width:200px">{{ h.original_name or '—' }}</td>
+        <td><small class="text-muted">{{ h.created_at }}</small></td>
+        <td>
+          <form method="POST" action="{{ url_for('pages.delete_history_route', history_id=h.id) }}" onsubmit="return confirm('Delete this history entry?')">
+            <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete history entry" title="Delete history entry"><i class="bi bi-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% if not items %}<tr><td colspan="5" class="text-muted text-center py-4">No history yet</td></tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

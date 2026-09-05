@@ -1,0 +1,106 @@
+{% extends "dash_base.html" %}
+
+{% block dash_title %}Activity Logs{% endblock %}
+
+{% block dash_content %}
+<div class="glass p-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-semibold mb-0">
+      <i class="bi bi-list-check"></i> System Activity Logs
+    </h5>
+
+    <form method="post"
+          action="{{ url_for('authority.clear_activity_logs_route') }}"
+          onsubmit="return confirm('Delete all system activity logs?');">
+      <button type="submit" class="btn btn-sm btn-outline-danger">
+        <i class="bi bi-trash3"></i> Clear all
+      </button>
+    </form>
+  </div>
+
+  <div class="table-glass">
+    <table class="table table-hover align-middle">
+
+      <thead>
+        <tr>
+          <th>Actor</th>
+          <th>Action</th>
+          <th>IP</th>
+          <th>Detail</th>
+          <th>Time</th>
+          <th class="text-end">Delete</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+      {% for l in logs %}
+      <tr>
+
+        <td>{{ l.actor_name or l.user_name or 'System' }}</td>
+
+        <!-- ACTION BADGE COLOR -->
+        <td>
+          <span class="badge
+            {% if 'login' in l.action|lower %}
+              bg-success
+            {% elif 'delete' in l.action|lower %}
+              bg-danger
+            {% elif 'update' in l.action|lower %}
+              bg-warning text-dark
+            {% else %}
+              bg-secondary
+            {% endif %}">
+            {{ l.action }}
+          </span>
+        </td>
+
+        <td>
+          <small class="text-muted">
+            {{ l.ip_address or 'Unknown' }}
+          </small>
+        </td>
+
+        <td class="text-truncate" style="max-width:240px">
+          {{ l.detail or 'Unknown' }}
+        </td>
+
+        <td>
+          <small class="text-muted">
+            {{ l.created_at }}
+          </small>
+        </td>
+
+        <td class="text-end">
+          <form method="post"
+                action="{{ url_for('authority.delete_activity_log_route', log_id=l.id) }}"
+                onsubmit="return confirm('Delete this activity log?');">
+
+            <button type="submit"
+                    class="btn btn-link btn-sm text-danger p-0"
+                    aria-label="Delete activity log">
+              <i class="bi bi-trash"></i>
+            </button>
+
+          </form>
+        </td>
+
+      </tr>
+      {% endfor %}
+
+      {% if not logs %}
+      <tr>
+        <td colspan="6" class="text-muted text-center py-4">
+          No activity logged
+        </td>
+      </tr>
+      {% endif %}
+
+      </tbody>
+
+    </table>
+  </div>
+
+</div>
+{% endblock %}

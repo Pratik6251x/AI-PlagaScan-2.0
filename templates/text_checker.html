@@ -1,0 +1,97 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Text Plagiarism Checker{% endblock %}
+{% block dash_content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="glass p-4 p-md-5">
+      <h4 class="fw-semibold mb-1"><i class="bi bi-pencil-square"></i> Paste your text for plagiarism check</h4>
+      <p class="text-muted small mb-4">Enter or paste any text to check for plagiarism against all documents in the system.</p>
+      <form id="textCheckForm">
+        <div class="mb-3">
+          <label class="form-label">Optional: Give this check a title</label>
+          <input type="text" name="title" class="form-control" placeholder="e.g. My Essay">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Enter or paste your text here <span class="text-danger">*</span></label>
+          <textarea name="text" class="form-control" rows="12" placeholder="Paste your text here..." required></textarea>
+          <small class="text-muted d-block mt-2">Character count: <span id="charCount">0</span></small>
+        </div>
+        <div class="text-check-alert alert" style="display:none"></div>
+        <div class="text-check-progress mb-3" style="display:none">
+          <label class="form-label small">Analyzing text...</label>
+          <div class="meter"><span class="progress-bar" style="width:0%"></span></div>
+        </div>
+        <button type="submit" class="btn btn-grad w-100"><i class="bi bi-magic"></i> Check Plagiarism</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('textCheckForm');
+  const textarea = form.querySelector('textarea[name="text"]');
+  const charCount = document.getElementById('charCount');
+  const alertBox = document.querySelector('.text-check-alert');
+  const progressBox = document.querySelector('.text-check-progress');
+
+  // Update character count
+  textarea.addEventListener('input', function() {
+    charCount.textContent = this.value.length;
+  });
+
+  // Handle form submission
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const text = textarea.value.trim();
+    const title = form.querySelector('input[name="title"]').value.trim() || null;
+
+    // Validation
+    if (!text) {
+      alertBox.textContent = 'Please enter some text to check.';
+      alertBox.className = 'text-check-alert alert alert-warning';
+      alertBox.style.display = 'block';
+      return;
+    }
+
+    if (text.length < 20) {
+      alertBox.textContent = 'Please enter at least 20 characters.';
+      alertBox.className = 'text-check-alert alert alert-warning';
+      alertBox.style.display = 'block';
+      return;
+    }
+
+    // Show progress
+    alertBox.style.display = 'none';
+    progressBox.style.display = 'block';
+    form.querySelector('button[type="submit"]').disabled = true;
+
+    try {
+      const response = await fetch('/api/text-check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, title })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Analysis failed');
+      }
+
+      // Redirect to report
+      window.location.href = '/report/' + data.report_id;
+    } catch (error) {
+      alertBox.textContent = 'Error: ' + error.message;
+      alertBox.className = 'text-check-alert alert alert-danger';
+      alertBox.style.display = 'block';
+      progressBox.style.display = 'none';
+      form.querySelector('button[type="submit"]').disabled = false;
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Settings{% endblock %}
+{% block dash_content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="glass p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-gear"></i> Preferences</h5>
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label">Theme</label>
+          <select name="theme" class="form-select">
+            <option value="dark" {% if settings.theme == 'dark' %}selected{% endif %}>Dark</option>
+            <option value="light" {% if settings.theme == 'light' %}selected{% endif %}>Light</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Language</label>
+          <select name="language" class="form-select">
+            <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
+            <option value="es" {% if settings.language == 'es' %}selected{% endif %}>Hindi</option>
+            <option value="fr" {% if settings.language == 'fr' %}selected{% endif %}>French</option>
+            <option value="de" {% if settings.language == 'de' %}selected{% endif %}>German</option>
+          </select>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" name="email_alerts" id="ea" {% if settings.email_alerts %}checked{% endif %}>
+          <label class="form-check-label" for="ea">Email alerts for new reports</label>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" name="auto_report" id="ar" {% if settings.auto_report %}checked{% endif %}>
+          <label class="form-check-label" for="ar">Automatically generate report on upload</label>
+        </div>
+        <button class="btn btn-grad w-100"><i class="bi bi-check2-circle"></i> Save Settings</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

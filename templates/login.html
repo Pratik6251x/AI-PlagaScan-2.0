@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Login - PlagiaScan AI Lite{% endblock %}
+{% block body %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height:90vh">
+  <div class="glass auth-card w-100 fade-up">
+    <div class="text-center mb-4">
+      <i class="bi bi-shield-check fs-1 grad-text"></i>
+      <h3 class="fw-bold mt-2">Welcome Back</h3>
+      <p class="text-muted">Log in to your PlagiaScan account</p>
+    </div>
+    <form method="POST" onsubmit="return validateLoginForm(this)">
+      <div class="mb-3">
+        <label class="form-label">Email address</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+          <input type="email" name="email" class="form-control" placeholder="you@example.com" required autofocus inputmode="email" pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$" maxlength="254">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input type="password" name="password" class="form-control" placeholder="••••••••" required minlength="8" maxlength="16" pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*?]).{8,16}$">
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePw(this)"><i class="bi bi-eye"></i></button>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="remember" id="rem"><label class="form-check-label small text-muted" for="rem">Remember me</label></div>
+        <a href="{{ url_for('auth.forgot_password') }}" class="small">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn btn-grad w-100"><i class="bi bi-box-arrow-in-right"></i> Login</button>
+    </form>
+    <p class="text-center mt-3 mb-0 text-muted small">Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up</a></p>
+    <div class="glass mt-3 p-2 small text-muted text-center">
+      Admin: <strong> admin@plagiascan.ai</strong> / <strong>Admin@12</strong><br>
+
+       Student: <strong>pratiklal50@gmail.com</strong> / <strong>Pratik@2</strong>
+    </div>
+  </div>
+</div>
+<script>
+function togglePw(b){const i=b.parentElement.querySelector('input');i.type=i.type==='password'?'text':'password';b.querySelector('i').className=i.type==='password'?'bi bi-eye':'bi bi-eye-slash';}
+function validateLoginForm(form){
+  const email=form.email.value.trim();
+  const password=form.password.value;
+  const emailPattern=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  if(!emailPattern.test(email)){
+    form.email.focus();
+    alert('Please enter a valid email address.');
+    return false;
+  }
+  if(password.length<8){
+    form.password.focus();
+    alert('Password must be at least 8 characters.');
+    return false;
+  }
+  if(password.length>16){
+    form.password.focus();
+    alert('Password must be no more than 16 characters.');
+    return false;
+  }
+  return true;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Documents{% endblock %}
+{% block dash_content %}
+<div class="glass p-4">
+  <h5 class="fw-semibold mb-3"><i class="bi bi-folder2-open"></i> My Documents</h5>
+  <div class="table-glass">
+    <table class="table table-hover">
+      <thead><tr><th>Name</th><th>Type</th><th>Size</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+      <tbody>
+      {% for d in docs %}
+      <tr>
+        <td class="text-truncate" style="max-width:220px">{{ d.original_name }}</td>
+        <td><span class="badge bg-secondary-subtle text-secondary">{{ d.file_type }}</span></td>
+        <td>{{ '%.1f MB' % (d.file_size/1048576) if d.file_size >= 1048576 else '%.1f KB' % (d.file_size/1024) }}</td>
+        <td><span class="badge bg-{% if d.status == 'processed' %}success{% else %}warning{% endif %}-subtle text-{% if d.status == 'processed' %}success{% else %}warning{% endif %}">{{ d.status }}</span></td>
+        <td><small class="text-muted">{{ d.created_at }}</small></td>
+        <td>
+          <form method="POST" action="{{ url_for('pages.delete_doc', doc_id=d.id) }}" class="d-inline" onsubmit="return confirm('Delete this document?')">
+            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% if not docs %}<tr><td colspan="6" class="text-muted text-center py-4">No documents uploaded yet</td></tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

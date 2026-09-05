@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Register - PlagiaScan AI Lite{% endblock %}
+{% block body %}
+<div class="container d-flex align-items-center justify-content-center py-5">
+  <div class="glass auth-card w-100 fade-up" style="max-width:560px">
+    <div class="text-center mb-4">
+      <i class="bi bi-person-plus fs-1 grad-text"></i>
+      <h3 class="fw-bold mt-2">Create Account</h3>
+      <p class="text-muted">Join PlagiaScan AI Lite</p>
+    </div>
+    <form method="POST">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="full_name" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone</label>
+          <input type="text" name="phone" class="form-control">
+          <div class="form-text text-danger" id="phone-error" style="display:none"></div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Department</label>
+          <input type="text" name="department" class="form-control">
+        </div>
+        <div class="col-12">
+          <label class="form-label">Account Type</label>
+          <select name="role" class="form-select" required>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher / Faculty</option>
+            <option value="authority">High Authority</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required minlength="8" maxlength="16" pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*?]).{8,16}$" title="Use 8 to 16 characters with uppercase, lowercase, number, and a special character (!,@,#,$,%,^,&,*,?)">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" name="confirm_password" class="form-control" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-grad w-100 mt-4"><i class="bi bi-person-check"></i> Create Account</button>
+    </form>
+    <p class="text-center mt-3 mb-0 text-muted small">Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+  </div>
+</div>
+  {% endblock %}
+
+  {% block scripts %}
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form[method="POST"]');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      const phoneInput = form.querySelector('input[name="phone"]');
+      if (!phoneInput) return;
+      const raw = (phoneInput.value || '').trim();
+      const cleaned = raw.replace(/\s|-/g, '');
+      if (!cleaned) return; // empty allowed
+    const errorEl = document.getElementById('phone-error');
+    errorEl.style.display = 'none';
+    errorEl.textContent = '';
+    let ok = false;
+    if (cleaned.startsWith('+')) {
+      const digits = cleaned.slice(1);
+      if (/^\d+$/.test(digits) && digits.length > 10) {
+        const local = digits.slice(-10);
+        const country = digits.slice(0, -10);
+        if (local.length === 10 && country.length >=1 && country.length <=3) {
+          phoneInput.value = '+' + digits; // normalized
+          ok = true;
+        }
+      }
+    } else {
+      if (/^\d{10}$/.test(cleaned)) {
+        phoneInput.value = cleaned;
+        ok = true;
+      }
+    }
+    if (!ok) {
+      e.preventDefault();
+      errorEl.textContent = 'Phone number must be exactly 10 digits and may include an optional country code like +91.';
+      errorEl.style.display = 'block';
+      phoneInput.focus();
+    }
+    });
+  });
+  </script>
+  {% endblock %}

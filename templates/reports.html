@@ -1,0 +1,39 @@
+{% extends "dash_base.html" %}
+{% block dash_title %}Reports{% endblock %}
+{% block dash_content %}
+<div class="glass p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-semibold mb-0"><i class="bi bi-file-earmark-bar-graph"></i> My Reports</h5>
+    {% if reports %}
+    <form method="POST" action="{{ url_for('pages.delete_all_reports_route') }}" onsubmit="return confirm('Delete all reports? This cannot be undone.')">
+      <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete all</button>
+    </form>
+    {% endif %}
+  </div>
+  <div class="table-glass">
+    <table class="table table-hover">
+      <thead><tr><th>Document</th><th>Similarity</th><th>Original</th><th>AI %</th><th>Category</th><th>Date</th><th>Actions</th></tr></thead>
+      <tbody>
+      {% for r in reports %}
+      <tr>
+        <td><a href="{{ url_for('pages.view_report', report_id=r.id) }}">{{ r.original_name }}</a></td>
+        <td>{% if r.scan_status == 'processing' %}Pending{% else %}{{ r.similarity_percent }}%{% endif %}</td>
+        <td>{% if r.scan_status == 'processing' %}Pending{% else %}{{ r.original_percent }}%{% endif %}</td>
+        <td>{% if r.scan_status == 'processing' %}Pending{% else %}{{ r.ai_probability }}%{% endif %}</td>
+        <td><span class="badge-cat {% if r.similarity_percent <= 10 %}cat-very-low{% elif r.similarity_percent <= 30 %}cat-low{% elif r.similarity_percent <= 50 %}cat-medium{% elif r.similarity_percent <= 75 %}cat-high{% else %}cat-very-high{% endif %}">{{ r.category }}</span></td>
+        <td><small class="text-muted">{{ r.created_at }}</small></td>
+        <td>
+          <a href="{{ url_for('pages.view_report', report_id=r.id) }}" class="btn btn-sm btn-outline-glass"><i class="bi bi-eye"></i></a>
+          <a href="/api/report/{{ r.id }}/export/pdf" class="btn btn-sm btn-outline-glass"><i class="bi bi-file-pdf"></i></a>
+          <form method="POST" action="{{ url_for('pages.delete_report_route', report_id=r.id) }}" class="d-inline" onsubmit="return confirm('Delete this report?')">
+            <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete report" title="Delete report"><i class="bi bi-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% if not reports %}<tr><td colspan="7" class="text-muted text-center py-4">No reports yet. Upload a document to generate one.</td></tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

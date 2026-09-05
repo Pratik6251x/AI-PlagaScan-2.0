@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}About - PlagiaScan AI Lite{% endblock %}
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-glass sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('main.index') }}"><i class="bi bi-shield-check"></i> PlagiaScan <span class="grad-text">AI Lite</span></a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#n"><i class="bi bi-list text-light"></i></button>
+    <div class="collapse navbar-collapse" id="n">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.about') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="btn btn-outline-glass" href="{{ url_for('auth.login') }}">Login</a></li>
+        <li class="nav-item"><a class="btn btn-grad" href="{{ url_for('auth.register') }}">Get Started</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5" data-reveal>
+      <h1 class="section-title">About <span class="grad-text">PlagiaScan AI Lite</span></h1>
+      <p class="section-sub">AI-based plagiarism detection built for academic integrity</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-8" data-reveal>
+        <div class="glass p-4 p-md-5">
+          <p class="lead">PlagiaScan AI Lite is a lightweight, self-hostable plagiarism detection platform that combines classical NLP techniques with modern semantic similarity to help students, teachers and institutions verify document authenticity.</p>
+          <p>It uses <strong>TF-IDF vectorisation</strong>, <strong>cosine similarity</strong>, <strong>sentence transformer embeddings</strong>, <strong>spaCy</strong> for linguistic processing and <strong>NLTK</strong> for tokenisation to compare an uploaded document against every other document stored in the system and produce a detailed similarity report.</p>
+          <p>Beyond matching, the engine estimates the probability that text was <strong>AI-generated</strong> versus <strong>human-written</strong> using structural heuristics, and assigns a <strong>confidence score</strong> so users understand the reliability of each result.</p>
+          <div class="alert alert-info bg-transparent border-info">
+            <strong>Important:</strong> PlagiaScan AI Lite provides probabilistic analysis only. It does not verify legal copyright ownership, and its AI-detection estimate is not a definitive verdict.
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4" data-reveal>
+        <div class="glass p-4">
+          <h5 class="fw-semibold mb-3">Key Highlights</h5>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 15+ file formats supported</li>
+            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Up to 1 GB per upload</li>
+            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Role-based access control</li>
+            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> PDF, DOCX &amp; Excel exports</li>
+            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Admin analytics dashboard</li>
+            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Citation suggestions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

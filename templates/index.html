@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}PlagiaScan AI Lite - AI Based Plagiarism Detector{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-glass sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('main.index') }}">
+      <i class="bi bi-shield-check"></i> PlagiaScan <span class="grad-text">AI Lite</span>
+    </a>
+    <button class="navbar-toggler text-light" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <i class="bi bi-list text-light"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+        <li class="nav-item"><a class="nav-link" href="#how">How It Works</a></li>
+        <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a></li>
+        {% if current_user %}
+          <li class="nav-item"><a class="btn btn-grad ms-lg-2" href="{{ url_for(current_user.role ~ '.dashboard') }}">Dashboard</a></li>
+        {% else %}
+          <li class="nav-item"><a class="btn btn-outline-glass ms-lg-2" href="{{ url_for('auth.login') }}">Login</a></li>
+          <li class="nav-item"><a class="btn btn-grad ms-lg-1" href="{{ url_for('auth.register') }}">Get Started</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7" data-reveal>
+        <span class="badge bg-primary-subtle text-primary mb-3 px-3 py-2 rounded-pill">
+          <i class="bi bi-stars"></i> AI-Powered Detection
+        </span>
+        <h1>Detect Plagiarism with <span class="grad-text">AI Precision</span></h1>
+        <p class="lead text-muted">
+          Upload documents and get instant semantic similarity analysis,
+          AI-generated probability, and professional reports. Built with
+          <span class="typing" data-words='["Sentence Transformers","TF-IDF","spaCy","NLTK","Cosine Similarity"]'></span>
+        </p>
+        <div class="d-flex flex-wrap gap-3 mt-4">
+          <a href="{{ url_for('auth.register') }}" class="btn btn-grad btn-lg">
+            <i class="bi bi-rocket-takeoff"></i> Start Free
+          </a>
+          <a href="#how" class="btn btn-outline-glass btn-lg">
+            <i class="bi bi-diagram-3"></i> How It Works
+          </a>
+        </div>
+        <div class="d-flex gap-4 mt-4 text-muted">
+          <span><i class="bi bi-file-earmark-text"></i> 15+ file types</span>
+          <span><i class="bi bi-shield-lock"></i> Secure upload</span>
+          <span><i class="bi bi-graph-up"></i> Real-time analysis</span>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-block" data-reveal>
+        <div class="glass p-4 fade-in">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="fw-bold">Live Analysis</span>
+            <span class="badge bg-success-subtle text-success">Complete</span>
+          </div>
+          <p class="mb-2 text-muted">Similarity Score</p>
+          <div class="meter mb-3"><span data-width="34"></span></div>
+          <div class="row text-center mt-3">
+            <div class="col-6">
+              <div class="stat-value grad-text" data-count="34" data-decimals="0">0</div>
+              <small class="text-muted">Similarity %</small>
+            </div>
+            <div class="col-6">
+              <div class="stat-value grad-text" data-count="66" data-decimals="0">0</div>
+              <small class="text-muted">Original %</small>
+            </div>
+          </div>
+          <hr class="border-secondary">
+          <div class="d-flex justify-content-between"><span>AI Probability</span><span class="fw-bold">28%</span></div>
+          <div class="meter mb-2"><span data-width="28"></span></div>
+          <div class="d-flex justify-content-between"><span>Human Probability</span><span class="fw-bold">72%</span></div>
+          <div class="meter"><span data-width="72"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- FEATURES -->
+<section id="features" class="py-5">
+  <div class="container">
+    <div class="text-center" data-reveal>
+      <h2 class="section-title">Powerful <span class="grad-text">Features</span></h2>
+      <p class="section-sub">Everything you need to verify authenticity in one platform</p>
+    </div>
+    <div class="row g-4">
+      {% set features = [
+        ('bi-cloud-arrow-up', 'Upload Files', 'Support for PDF, DOCX, PPTX, TXT, RTF, images and more up to 1 GB.'),
+        ('bi-robot', 'AI Detection', 'Estimate the probability that text was AI-generated vs human-written.'),
+        ('bi-diagram-2', 'Semantic Analysis', 'Sentence Transformers and spaCy understand meaning, not just keywords.'),
+        ('bi-search', 'Plagiarism Detection', 'TF-IDF and cosine similarity match against your stored document corpus.'),
+        ('bi-file-earmark-bar-graph', 'Reports', 'Professional PDF, DOCX and Excel reports with matched sources.'),
+        ('bi-graph-up-arrow', 'Analytics', 'Daily uploads, similarity trends and department statistics for admins.'),
+        ('bi-shield-lock', 'Security', 'Password hashing, sessions, role-based access and secure file validation.'),
+        ('bi-people', 'Role Based Access', 'Distinct dashboards for Students, Teachers and High Authorities.')
+      ] %}
+      {% for icon, title, desc in features %}
+        <div class="col-md-6 col-lg-3" data-reveal>
+          <div class="glass feature-card">
+            <div class="icon"><i class="bi {{ icon }}"></i></div>
+            <h5 class="fw-semibold mb-2">{{ title }}</h5>
+            <p class="text-muted small mb-0">{{ desc }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="py-5">
+  <div class="container">
+    <div class="text-center" data-reveal>
+      <h2 class="section-title">How It <span class="grad-text">Works</span></h2>
+      <p class="section-sub">Eight steps from upload to professional report</p>
+    </div>
+    <div class="row g-3 align-items-center">
+      {% set steps = ['Upload File','Extract Text','Preprocessing','TF-IDF','Sentence Transformers','Cosine Similarity','Generate Similarity','Generate Report'] %}
+      {% for s in steps %}
+        <div class="col-6 col-md-3" data-reveal>
+          <div class="step glass p-4 h-100">
+            <div class="step-num">{{ loop.index }}</div>
+            <p class="fw-semibold mb-0">{{ s }}</p>
+          </div>
+        </div>
+        {% if not loop.last and loop.index0 % 4 == 3 %}
+          <div class="col-12 text-center my-2"><i class="bi bi-arrow-down step-arrow"></i></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center" data-reveal>
+      <h2 class="section-title">Technology <span class="grad-text">Stack</span></h2>
+      <p class="section-sub">Built on proven open-source AI and web technologies</p>
+    </div>
+    <div class="text-center" data-reveal>
+      {% set techs = ['Python','Flask','MySQL','spaCy','NLTK','scikit-learn','TF-IDF','Sentence Transformers','Cosine Similarity','HTML5','CSS3','Bootstrap 5','Vanilla JS','ReportLab'] %}
+      {% for t in techs %}
+        <span class="tech-chip"><i class="bi bi-code-slash"></i> {{ t }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- FAQ -->
+<section id="faq" class="py-5">
+  <div class="container">
+    <div class="text-center mb-4" data-reveal>
+      <h2 class="section-title">Frequently Asked <span class="grad-text">Questions</span></h2>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="accordion accordion-glass" id="faqAcc" data-reveal>
+          {% set faqs = [
+            ('Does PlagiaScan prove copyright ownership?','No. Results are probabilistic analysis. We compare your document against other documents stored in the system and estimate similarity and AI-generated probability. We do not verify legal copyright ownership.'),
+            ('How accurate is the AI detection?','Our heuristic combines sentence-length variance, punctuation diversity and structural uniformity. It provides a probability estimate, not a definitive verdict. Always use human judgement.'),
+            ('What file types are supported?','PDF, DOC, DOCX, PPT, PPTX, TXT, RTF, ODT, CSV, XLS, XLSX, PNG, JPG and JPEG up to 1 GB.'),
+            ('Is my data secure?','Passwords are hashed, sessions are managed server-side, file uploads are validated, and role-based access control restricts who can see what.'),
+            ('Can I export reports?','Yes. Every report can be downloaded as PDF, exported as DOCX or Excel, and shared via a link.')
+          ] %}
+          {% for q, a in faqs %}
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq{{ loop.index }}">
+                {{ q }}
+              </button>
+            </h2>
+            <div id="faq{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#faqAcc">
+              <div class="accordion-body">{{ a }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT CTA -->
+<section class="py-5">
+  <div class="container">
+    <div class="glass p-5 text-center" data-reveal>
+      <h2 class="fw-bold mb-2">Ready to check your documents?</h2>
+      <p class="text-muted mb-4">Create an account and run your first analysis in minutes.</p>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-grad btn-lg"><i class="bi bi-rocket-takeoff"></i> Get Started Free</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h5 class="grad-text fw-bold"><i class="bi bi-shield-check"></i> PlagiaScan AI Lite</h5>
+        <p class="small">AI-based plagiarism detection and semantic similarity analysis for students, faculty and institutions.</p>
+      </div>
+      <div class="col-md-2"><h6 class="fw-semibold">Product</h6><ul class="list-unstyled"><li><a href="#features">Features</a></li><li><a href="#how">How It Works</a></li><li><a href="{{ url_for('auth.register') }}">Sign Up</a></li></ul></div>
+      <div class="col-md-2"><ul class="list-unstyled"><li><a href="{{ url_for('main.about') }}">About</a></li><li><a href="{{ url_for('main.contact') }}">Contact</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div class="col-md-4"><h6 class="fw-semibold">Disclaimer</h6><p class="small">PlagiaScan AI Lite provides probabilistic analysis only. It does not constitute legal proof of plagiarism, copyright ownership, or authorship.</p></div>
+    </div>
+    <hr class="border-secondary">
+    <div class="d-flex justify-content-between flex-wrap text-muted small">
+      <span>&copy; 2026 PlagiaScan AI Lite. All rights reserved.</span>
+      <span>Built with Flask, spaCy, NLTK &amp; scikit-learn</span>
+    </div>
+  </div>
+</footer>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  initTyping(document.querySelector('.typing'), ['Sentence Transformers','TF-IDF','spaCy','NLTK','Cosine Similarity']);
+</script>
+{% endblock %}

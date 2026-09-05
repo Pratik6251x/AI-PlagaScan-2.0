@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}FAQ - PlagiaScan AI Lite{% endblock %}
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-glass sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('main.index') }}"><i class="bi bi-shield-check"></i> PlagiaScan <span class="grad-text">AI Lite</span></a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#n"><i class="bi bi-list text-light"></i></button>
+    <div class="collapse navbar-collapse" id="n">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.faq') }}">FAQ</a></li>
+        <li class="nav-item"><a class="btn btn-outline-glass" href="{{ url_for('auth.login') }}">Login</a></li>
+        <li class="nav-item"><a class="btn btn-grad" href="{{ url_for('auth.register') }}">Get Started</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-4"><h1 class="section-title">FAQ</h1><p class="section-sub">Answers to common questions</p></div>
+    <div class="row justify-content-center"><div class="col-lg-8">
+      <div class="accordion accordion-glass" id="faqAcc">
+        {% set faqs = [
+          ('Does PlagiaScan prove copyright ownership?','No. Results are probabilistic analysis comparing your document against stored documents. We do not verify legal copyright ownership.'),
+          ('How accurate is AI detection?','It is a heuristic estimate based on sentence structure and punctuation. It is not a definitive verdict. Always use human judgement.'),
+          ('What file types are supported?','PDF, DOC, DOCX, PPT, PPTX, TXT, RTF, ODT, CSV, XLS, XLSX, PNG, JPG, JPEG up to 1 GB.'),
+          ('Is my data secure?','Passwords are hashed, sessions are server-managed, uploads are validated, and role-based access controls who sees what.'),
+          ('Can I export reports?','Yes - PDF, DOCX, Excel and a shareable link.')
+        ] %}
+        {% for q,a in faqs %}
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button {% if not loop.first %}collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#f{{ loop.index }}">{{ q }}</button></h2>
+          <div id="f{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#faqAcc"><div class="accordion-body">{{ a }}</div></div>
+        </div>
+        {% endfor %}
+      </div>
+{% endblock %}
