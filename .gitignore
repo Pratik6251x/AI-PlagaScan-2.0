@@ -1,9 +1,34 @@
+# Environment and secrets
 .env
+.env.local
+
+# Virtual environments
 .venv/
+.venv*/
+venv/
+ENV/
+
+# IDE and editors
+.vscode/
+.idea/
+
+# Python bytecode & cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Application runtime data
 uploads/*
 !uploads/.gitkeep
 reports/*
 !reports/.gitkeep
 database/*.db
+database/*.sqlite
+database/*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
