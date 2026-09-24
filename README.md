@@ -1,6 +1,6 @@
 # AI PlagaScan — Internet Plagiarism Edition
 
-> **Live Website / Public Demo**: [https://monorail-consult-eardrum.ngrok-free.dev](https://monorail-consult-eardrum.ngrok-free.dev)  
+> **Live Website / Public Demo**: [https://ai-plagascan-2-0-1.onrender.com](https://ai-plagascan-2-0-1.onrender.com)
 > **Repository**: [https://github.com/Pratik6251x/AI-PlagaScan-2.0](https://github.com/Pratik6251x/AI-PlagaScan-2.0)
 
 AI PlagaScan integrates the Copyleaks Authenticity API with live Internet scanning. Uploaded files (PDF, DOCX, PPTX, Images via OCR) and pasted text are scanned across the web in real-time, receiving Copyleaks webhooks and updating the interactive report automatically.
